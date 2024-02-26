@@ -188,40 +188,12 @@ behaviourDir = fullfile(currentScriptDir, 'behavioural_data');
 behaviourFilePath = fullfile(behaviourDir, 'behavior_update_iq.xlsx');
 behavior_table=readtable(behaviourFilePath);
 
-% Zero pad the ScannerID column to ensure consistent ID formatting
-nRows = size(behavior_table,1);
-
-% preallocate a cell array for zero-padded strings
-zeroPaddedStrings = cell(nRows,1);
-
-% Iterated through the numbers column and create zero-padded strings
-for i = 1:nRows
-    zeroPaddedStrings{i} = sprintf('%04d', behavior_table. ScannerID(i));
-end
-
-% Replace the original ScannerID column with zero-padded strings
-behavior_table.ScannerID = zeroPaddedStrings;
-
-% Get the number of elements in images_dir
-nElements = numel(images_dir);
-
-% Preallocate a vector for matching indexes between behavior and imaging data
-matchingIndexes = [];
-
-% Iterate through images_dir and find matching indexes in behavior_table
-for i = 1:nElements
-    idx = find(strcmp(images_dir(i).name, behavior_table.ScannerID),1);
-    
-    if ~isempty(idx)
-        matchingIndexes = [matchingIndexes; idx]; % If a match is found, add the index to matchingIndexes
-    end
-end
-% Assign the result to IndexVar
-IndexVar = matchingIndexes;
+% load brain-behaviour mappings
+load('Index_Var_structural_iq.mat')
 
 %% Setup Names Vars in Batch
 results.covariates.effect_names ={'AllSubjects','Age', 'Gender', 'MelodyScore','PercentageMelodyScore','RhythmScore','PercentageOfRhythmScore',...
-    'TotalMETScore','PercentageOfTotalMETScore','F1','F2','F3','F4','F5','GS', 'IQ', 'VCI','PRI','WMI','PSI','ScannerID'};
+    'TotalMETScore','PercentageOfTotalMETScore','F1','F2','F3','F4','F5','GS', 'IQ', 'VCI','PRI','WMI','PSI'};
 
 % Load behavioral data from table
 results.covariates.effect{1}=ones(numel(images_dir),1); %allSubjects
@@ -232,20 +204,7 @@ for ii = 2:size(results.covariates.effect_names,2)
  column_values = behavior_table.(namevar)(IndexVar);
  results.covariates.effect{ii}=column_values;
 end
-
-idx_behav = []; %initialize variable
-
-% Loop over elements to find idx to remove in matrix
-
-numVars = numel(results.covariates.effect_names);
-names = rmPp;
-
-for k = 1:numel(results.covariates.effect{:,numVars})
-    if any(strcmp(names,results.covariates.effect{1,numVars}{k,1}))
-        idx_behav = [idx_behav; k];
-    end
-end
-
+%% Remove participants if needed
 
 % Remove participants
 if strcmp(removeparticipant,'yes')
@@ -253,7 +212,7 @@ if strcmp(removeparticipant,'yes')
         CurrCell = results.covariates.effect{1,i};
         
         % remove the specific rows
-        CurrCell(idx_behav,:) = [];
+        CurrCell(idx,:) = [];
         
         % update the cell structure
         results.covariates.effect{1,i} = CurrCell;

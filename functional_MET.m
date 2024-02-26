@@ -31,7 +31,6 @@
 %% Select the correct parameters
 clc % Clear command window 
 
-
 thr = [0.15:0.01:0.30]; % Range of proportional thresholds applied to connectome matrices
 behav = {'PercentageTotalMETScore'}; % Define behavior variable for regression analysis
 
@@ -179,40 +178,13 @@ behaviourDir = fullfile(currentScriptDir, 'behavioural_data');
 behaviourFilePath = fullfile(behaviourDir, 'behavior_update.xlsx');
 behavior_table = readtable(behaviourFilePath);
 
-% Zero pad the ScannerID column to ensure consistent ID formatting
-nRows = size(behavior_table, 1); % Get number of rows in the table
-zeroPaddedStrings = cell(nRows, 1); % Preallocate a cell array for zero-padded strings
-
-% Iterate through the numbers column and create zero-padded strings
-for i = 1:nRows
-    zeroPaddedStrings{i} = sprintf('%04d', behavior_table.ScannerID(i));
-end
-
-% Replace the original ScannerID column with zero-padded strings
-behavior_table.ScannerID = zeroPaddedStrings;
-
-% Load imaging data directory
-load('folders_pp_graphf.mat');
-
-% Preallocate a vector for matching indexes between behavior and imaging data
-matchingIndexes = [];
-
-% Iterate through images_dir and find matching indexes in behavior_table
-for i = 1:N
-    idx = find(strcmp(images_dir(i).name, behavior_table.ScannerID), 1);
-    if ~isempty(idx)
-        matchingIndexes = [matchingIndexes; idx]; % If a match is found, add the index to matchingIndexes
-    end
-end
-
-% Assign the result to IndexVar
-IndexVar = matchingIndexes;
-
+% load mappings brain-behaviour
+load('Index_Var_functional.mat')
 %% Setup Names Vars in Batch
 results.covariates.effect_names = {'AllSubjects', 'Age', 'Gender', 'MelodyScore', 'PercentageMelodyScore', 'RhythmScore', 'PercentageOfRhythmScore', 'TotalMETScore', 'PercentageOfTotalMETScore', 'F1', 'F2', 'F3', 'F4', 'F5', 'GS'};
 
 % Load behavioral data from table
-results.covariates.effect{1} = ones(numel(images_dir), 1); % AllSubjects
+results.covariates.effect{1} = ones(N, 1); % AllSubjects
 
 % Extract and assign other covariates based on effect names
 for ii = 2:size(results.covariates.effect_names, 2)
