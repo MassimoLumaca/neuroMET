@@ -4,7 +4,6 @@ clear,clc, close all
 
 connectome={'structural'}; % 'structural' or 'functional'
 %%
-cd('/Users/au540169/Documents/MATLAB/CPM')
 
 
 % Use 'matrix' to create a matrix ZZ with NaN values in the diagonal
