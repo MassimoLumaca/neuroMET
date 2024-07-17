@@ -5,6 +5,15 @@ import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 from statsmodels.stats.multitest import multipletests
 from itertools import product
+import os
+# Get the absolute path of the script file
+script_path = os.path.abspath(__file__)
+
+# Extract the directory path
+script_dir = os.path.dirname(script_path)
+
+# Change the current working directory to the script directory
+os.chdir(script_dir)
 
 # Load the data
 data = pd.read_csv('MET_IQ_scores.csv')
@@ -35,8 +44,8 @@ def annotate_plot_with_p_value_and_fdr(x, y, **kws):
     col1, col2 = ax.get_xlabel(), ax.get_ylabel()
     corrected_p = p_value_dict.get((col2, col1), 1)  # Reverse order because of how pairplot is plotted
     asterisk = '*' if corrected_p < 0.05 else ''
-    ax.text(0.05, 0.9, 'R = {:.2f}'.format(r), transform=ax.transAxes, fontsize=12)
-    ax.text(0.05, 0.8, 'pFDR = {:.3f}{}'.format(corrected_p, asterisk), transform=ax.transAxes, fontsize=12)
+    ax.text(0.05, 0.9, 'R = {:.2f}'.format(r), transform=ax.transAxes, fontsize=0)
+    ax.text(0.05, 0.8, 'pFDR = {:.3f}{}'.format(corrected_p, asterisk), transform=ax.transAxes, fontsize=0)
 
 # Plot settings
 plot_kwargs = dict(marker='o', scatter_kws={"color": "black"}, line_kws={'color': 'red'}, ci=95)
