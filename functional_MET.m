@@ -21,9 +21,10 @@
 %   various graph theory metrics.
 % - Conn: A functional connectivity analysis software, employed for preprocessing, analysis, and visualization of
 %   functional connectome data. Note that results may vary slightly based on the CONN version used.
+% - SPM12: software package designed for the analysis of brain imaging data sequences
 %
 % Usage Notes:
-% - Ensure that both BCT and Conn software packages are properly installed and accessible in your MATLAB environment 
+% - Ensure that BCT, SPM12, Conn software packages are properly installed and accessible in your MATLAB environment 
 %   prior to running this script.
 % - Adaptations may be required to align with specific research objectives or to accommodate updates in the
 %   dependencies and paths
