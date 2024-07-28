@@ -216,6 +216,18 @@ if strcmp(behav, 'PercentageTotalMETScore')
     D = [0, 0, 0, 0, 0]; 
     
     disp(['Effect of PercentageTotalMETScore, while correcting for age, gender, and training']);
+    
+elseif strcmp(behav, 'F5')
+    
+    % Set the GLM with specific covariates (e.g., intercept, age, gender, PercentageTotalMETScore, Musical Training)
+    X = [results.covariates.effect{1, 1}, results.covariates.effect{1, 2}, results.covariates.effect{1, 3}, results.covariates.effect{1, 14}];
+    
+    C = [0, 0, 0, 1]; % Contrast vector for focusing on the effect of PercentageTotalMETScore
+    M = 1; 
+    D = [0, 0, 0, 0]; 
+    
+disp(['Effect of Emotions, while correcting for age and gender']);
+   
 end
 
 %% Remove NaN Participants for Nodal-Level Measures
