@@ -24,7 +24,7 @@ Our analysis was tested on Matlab 2016b, Conn toolbox version 2021a, and the Bra
 	- ``functional_WMI.m``: Performs graph theory analysis of functional connectivity and multiple regression statistics with WMI, controlling for age, sex, and musical training.
 	- ``structural_WMI.m``: Performs graph theory analysis of structural connectivity and multiple regression statistics with WMI, controlling for age, sex, and musical training.
 	
-In the code snippets below, replace ‘name_of_the_script.m’ with the desired script name (e.g., ‘structural_WMI.m’) and replace ‘network_of_interest’ with either ‘frontoparietal’ (for analysis on the frontoparietal network) or ‘occipital’ (for analysis on the occipital network).
+In the code snippets below, replace ‘name_of_the_script.m’ with the desired script name (e.g., ‘structural_WMI.m’) and replace ‘network_of_interest’ with either ‘frontoparietal’ (for analysis on the frontoparietal network) or ‘occipital’ (for analysis on the occipital network). In ``functional_MET.m`` and ``structural_MET.m`` is possible to change the behavioural variable of interest (e.g., 'PercentageOfTotalMETScore' from MET, or 'F5' from Gold-MSI).
 
 4. Run the following commands in the MATLAB command line:
 ```
