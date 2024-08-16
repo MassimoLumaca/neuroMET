@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains MATLAB scripts designed for the complex-network analysis of structural and functional brain-connectivity data and for assessing their relationship to musical abilities (MET) and working memory (WMI). The scripts are extensively commented to ensure the replicability of the graph theory results detailed in our manuscript and its supplementary materials. 
+This repository contains scripts designed for the complex-network analysis of structural and functional brain-connectivity data and for assessing their relationship to musical abilities (MET) and working memory (WMI). The scripts are extensively commented to ensure the replicability of the graph theory results detailed in our manuscript and its supplementary materials. 
 Data cannot be shared publicly as it is part of an ongoing study, and thus considered unanonymized under Danish law. Researchers who wish to access the data may contact Dr Kristian Sandberg (kristian.sandberg@cfin.au.dk) at The Center of Functionally Integrative Neuroscience and/or The Technology Transfer Office (TTO@au.dk) at Aarhus University, Denmark, to establish a data sharing agreement. After permission has been given by the relevant ethics committee, data will be made available to the researchers for replication purposes.
 
 ## System requirements
@@ -10,10 +10,13 @@ Data cannot be shared publicly as it is part of an ongoing study, and thus consi
 To use these scripts, users must install specific softwares:
 
 - **MATLAB**: A platform for numerical computation, visualization, and programming. Installation instructions for Mac, Windows, and Linux are available at [MathWorks Installation Guide](https://it.mathworks.com/help/install/ug/install-products-with-internet-connection.html)
+- **SPM12**: software package designed for the analysis of brain imaging data sequences
 - **Conn Toolbox**: An open-source, MATLAB-based software for analyzing functional connectivity Magnetic Resonance Imaging (fcMRI). Installation instructions for Mac, Windows, and Linux can be found at [Conn Installation Guide](https://web.conn-toolbox.org/resources/conn-installation)
 - **Brain Connectivity Toolbox**: a MATLAB toolbox for complex brain-network analysis. To use, download BCT.zip from [BCTnet](https://sites.google.com/site/bctnet), extract its contents, navigate to these contents in MATLAB (or add the directory to the MATLAB path), and execute functions from the MATLAB command window.
+- **R**: A programming language and free software environment for statistical computing and graphics. Download the latest R installer for your operating system (Windows, Mac, or Linux) from the official CRAN mirrors at (https://cran.r-project.org/mirrors.html). Run the installer and follow the on-screen instructions to complete the setup.
+- **RStudio**: An integrated development environment (IDE) for R. After installing R, download the free RStudio Desktop version from https://posit.co/download/rstudio-desktop/. Run the installer for your platform and follow the installation wizard, keeping the default options. 
 
-Our analysis was tested on Matlab 2016b, Conn toolbox version 2021a, and the Brain Connectivity Toolbox (version 2019-03-03).
+Our analysis was tested on Matlab 2016b, Conn toolbox version 2021a, the Brain Connectivity Toolbox (version 2019-03-03), and RStudio (version 2024.04.0+735).
 
 ## Installation guide and demo
 
