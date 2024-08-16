@@ -3,6 +3,7 @@
 ## Overview
 
 This repository contains MATLAB scripts designed for the complex-network analysis of structural and functional brain-connectivity data and for assessing their relationship to musical abilities (MET) and working memory (WMI). The scripts are extensively commented to ensure the replicability of the graph theory results detailed in our manuscript and its supplementary materials. 
+Data cannot be shared publicly as it is part of an ongoing study, and thus considered unanonymized under Danish law. Researchers who wish to access the data may contact Dr Kristian Sandberg (kristian.sandberg@cfin.au.dk) at The Center of Functionally Integrative Neuroscience and/or The Technology Transfer Office (TTO@au.dk) at Aarhus University, Denmark, to establish a data sharing agreement. After permission has been given by the relevant ethics committee, data will be made available to the researchers for replication purposes.
 
 ## System requirements
 
