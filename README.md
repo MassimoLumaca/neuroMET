@@ -23,8 +23,8 @@ Our analysis was tested on Matlab 2016b, Conn toolbox version 2021a, the Brain C
 1. Download this repository as a ZIP file and unzip it into the desired directory.
 2. Add the directory path to MATLAB.
 3. Set the MATLAB current directory to the repository folder. It contains four main scripts:
-	- ``functional_MET.m``: Performs graph theory analysis of functional connectivity and multiple regression statistics with MET, controlling for age, sex, and musical training.
-	- ``structural_MET.m``: Performs graph theory analysis of structural connectivity and multiple regression statistics with MET, controlling for age, sex, and musical training.
+	- ``functional_MET.m``: Performs graph theory analysis of functional connectivity and multiple regression statistics with MET or Emotion, controlling for age, sex, and musical training.
+	- ``structural_MET.m``: Performs graph theory analysis of structural connectivity and multiple regression statistics with MET or Emotion, controlling for age, sex, and musical training.
 	- ``functional_WMI.m``: Performs graph theory analysis of functional connectivity and multiple regression statistics with WMI, controlling for age, sex, and musical training.
 	- ``structural_WMI.m``: Performs graph theory analysis of structural connectivity and multiple regression statistics with WMI, controlling for age, sex, and musical training.
 	
