@@ -47,9 +47,6 @@ currentScriptDir = fileparts(mfilename('fullpath'));
 % Construct paths to necessary directories
 connectomesDir = fullfile(currentScriptDir, 'connectomes');
 
-% Paths to specific files within the directories
-connectomeFilePath = fullfile(connectomesDir, 'structural_connectome_225_FPN.mat');
-
 %% Selection of the network of interest
 
 % Determine which nodes to include based on the selected network
