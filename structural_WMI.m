@@ -21,10 +21,9 @@
 %   various graph theory metrics.
 % - Conn: A functional connectivity analysis software, employed for preprocessing, analysis, and visualization of
 %   functional connectome data. Note that results may vary slightly based on the CONN version used.
-% - SPM12: software package designed for the analysis of brain imaging data sequences
 %
 % Usage Notes:
-% - Ensure that both BCT, SPM12, and Conn software packages are properly installed and accessible in your MATLAB environment 
+% - Ensure that both BCT and Conn software packages are properly installed and accessible in your MATLAB environment 
 %   prior to running this script.
 % - Adaptations may be required to align with specific research objectives or to accommodate updates in the
 %   dependencies and paths
@@ -39,6 +38,13 @@ removeparticipant={'yes'};
 % Set 'yes' if participants need to be removed according to multivariate outlier detection.
 % Otherwise, set to 'no'.
 
+%% Define paths
+
+% Determine the directory of the current script
+currentScriptDir = fileparts(mfilename('fullpath'));
+
+% Construct the path to the 'connectomes' directory from the current script's location
+connectomesDir = fullfile(currentScriptDir, 'connectomes');
 
 %% Selection of the network of interest
 
@@ -46,9 +52,12 @@ removeparticipant={'yes'};
 if strcmp(target_net,'frontoparietal')
     % Frontoparietal network nodes
     nodes=[15 16 25 26 27 53 54 56 89 90 99 100 101 127 128 130];
+    % Construct the path to your specific connectome file
+    connectomeFilePath = fullfile(connectomesDir, 'structural_connectome_195_FPN_WMI.mat');
 elseif strcmp(target_net,'occipital')
     % Occipital network nodes
     nodes= [2 19 20 21 22 42 59 65 76 93 94 95 96 116 133 139]; 
+    connectomeFilePath = fullfile(connectomesDir, 'structural_connectome_195_OCC_WMI.mat');
 end
 %% Remove participants
 % Participants with NaN in their WAIS scores (as taken from the variable results.covariates.effect calculated before you remove the pp)
@@ -75,16 +84,9 @@ end
 
 %% Load connectomes 
 
-% Determine the directory of the current script
-currentScriptDir = fileparts(mfilename('fullpath'));
-
-% Construct the path to the 'connectomes' directory from the current script's location
-connectomesDir = fullfile(currentScriptDir, 'connectomes');
-% Construct the path to your specific connectome file
-connectomeFilePath = fullfile(connectomesDir, 'structural_connectome_233.mat');
 load(connectomeFilePath)
 
-%% remove connectome matrix of participants
+%% Create indexes for removed participants
 
 % Get the cell array of names
 
@@ -99,10 +101,6 @@ for k = 1:numel(images_dir)
         idx = [idx; k];
     end
 end
-
-% remove idx in the structural connectome matrix
-
-matrix(:,:,idx) =[];
 
 %% GRAPH THEORY
 %% extract name and number nodes Destrieux parcellation
@@ -127,9 +125,6 @@ node148Destrieux = NodeNames;
 % extract relevant ROI names (Destrieux)
 NodeNames = NodeNames(nodes);
 numnodes=length(nodes);
-%% Node selection for an undirected graph
-disp(['Node selection']);
-Z = selectNodesForGraph(matrix, nodes);
 
 %% Thresholding and binarization
 disp(['Thresholding and binarization']);
