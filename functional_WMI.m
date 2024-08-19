@@ -21,10 +21,9 @@
 %   various graph theory metrics.
 % - Conn: A functional connectivity analysis software, employed for preprocessing, analysis, and visualization of
 %   functional connectome data. Note that results may vary slightly based on the CONN version used.
-% - SPM12: software package designed for the analysis of brain imaging data sequences
 %
 % Usage Notes:
-% - Ensure that both BCT, SPM12, Conn software packages are properly installed and accessible in your MATLAB environment 
+% - Ensure that both BCT and Conn software packages are properly installed and accessible in your MATLAB environment 
 %   prior to running this script.
 % - Adaptations may be required to align with specific research objectives or to accommodate updates in the
 %   dependencies and paths
@@ -46,6 +45,21 @@ removeparticipant={'yes'};
 % Set 'yes' if participants need to be removed according to multivariate outlier detection.
 % Otherwise, set to 'no'.
 
+%% Define Paths
+
+% Determine the directory of the current script
+currentScriptDir = fileparts(mfilename('fullpath'));
+
+% Construct the path to the 'NodeNames_and_coordinates' directory from the current script's location
+NodeNamesAndCoordinatesDir = fullfile(currentScriptDir, 'NodeNames_and_coordinates');
+
+
+% Construct the path to your specific node names and coordinates files
+NodeNamesPath = fullfile(NodeNamesAndCoordinatesDir, 'Destrieux.coordinates.mat');
+CoordinatesPath = fullfile(NodeNamesAndCoordinatesDir, 'DestrieuxCorticalNodes148.mat');
+% Construct paths to necessary directories
+connectomesDir = fullfile(currentScriptDir, 'connectomes');
+
 
 %% Selection of the network of interest
 
@@ -53,9 +67,14 @@ removeparticipant={'yes'};
 if strcmp(target_net,'frontoparietal')
     % Frontoparietal network nodes
     nodes=[15 16 25 26 27 53 54 56 89 90 99 100 101 127 128 130];
+    % Paths to specific files within the directories
+    connectomeFilePath = fullfile(connectomesDir, 'functional_connectome_201_FPN_WMI.mat');
+
 elseif strcmp(target_net,'occipital')
     % Occipital network nodes
-    nodes= [2 19 20 21 22 42 59 65 76 93 94 95 96 116 133 139]; 
+    nodes= [2 19 20 21 22 42 59 65 76 93 94 95 96 116 133 139];
+    connectomeFilePath = fullfile(connectomesDir, 'functional_connectome_201_OCC_WMI.mat');
+
 end
 
 %% Remove participants
@@ -71,19 +90,7 @@ end
 % Load functional connectivity matrices (values are in Fisher-transformed correlation coefficients-bivariate) 
 % and relevant node information
 
-% Determine the directory of the current script
-currentScriptDir = fileparts(mfilename('fullpath'));
 
-% Construct the path to the 'connectomes' directory from the current script's location
-connectomesDir = fullfile(currentScriptDir, 'connectomes');
-% Construct the path to the 'NodeNames_and_coordinates' directory from the current script's location
-NodeNamesAndCoordinatesDir = fullfile(currentScriptDir, 'NodeNames_and_coordinates');
-
-% Construct the path to your specific connectome file
-connectomeFilePath = fullfile(connectomesDir, 'functional_connectome_241.mat');
-% Construct the path to your specific node names and coordinates files
-NodeNamesPath = fullfile(NodeNamesAndCoordinatesDir, 'Destrieux.coordinates.mat');
-CoordinatesPath = fullfile(NodeNamesAndCoordinatesDir, 'DestrieuxCorticalNodes148.mat');
 % Load data
 load(connectomeFilePath);
 load(NodeNamesPath);
@@ -101,15 +108,6 @@ node148Destrieux = NodeNames;
 NodeNames = NodeNames(nodes);
 numnodes=length(nodes);
 
-% Conditionally remove participants' data from Z matrix
-if strcmp(removeparticipant,'yes')
-        Z(:,:,[removepp])=[];
-end
-
-%% Node selection for an undirected graph
-disp(['Node selection']);
-% Select nodes for graph analysis based on the defined network nodes
-Z = selectNodesForGraph(Z, nodes);
 %% Selection of connections
 
 disp(['Selection of connections']);
