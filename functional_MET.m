@@ -8,43 +8,50 @@
 % Overview:
 % This MATLAB script is designed to perform graph theory analyses on static connectomes. Its primary aim is to
 % investigate the correlations between neural network metrics and the
-% percentage of Total MET (Musical Ear Test) scores. 
+% percentage of Total MET (Musical Ear Test) scores.
 %
 % Key Features:
 % - Utilization of graph theory metrics to analyze static connectomes.
 % - Regression of neural network metrics with behavioural scores.
-% - Inclusion of node-level measures such as Local Efficiency, Clustering Coefficient, Betweenness Centrality, and 
+% - Inclusion of node-level measures such as Local Efficiency, Clustering Coefficient, Betweenness Centrality, and
 %   Global Efficiency to provide a comprehensive analysis of brain network characteristics.
 %
 % Dependencies:
-% - Brain Connectivity Toolbox (BCT): A comprehensive toolbox for complex network analysis, utilized for calculating 
+% - Brain Connectivity Toolbox (BCT): A comprehensive toolbox for complex network analysis, utilized for calculating
 %   various graph theory metrics.
 % - Conn: A functional connectivity analysis software, employed for preprocessing, analysis, and visualization of
 %   functional connectome data. Note that results may vary slightly based on the CONN version used.
-% - SPM12: software package designed for the analysis of brain imaging data sequences
 %
 % Usage Notes:
-% - Ensure that BCT, SPM12, Conn software packages are properly installed and accessible in your MATLAB environment 
+% - Ensure that both BCT and Conn software packages are properly installed and accessible in your MATLAB environment
 %   prior to running this script.
 % - Adaptations may be required to align with specific research objectives or to accommodate updates in the
 %   dependencies and paths
 
 %% Select the correct parameters
-clc % Clear command window 
+clc % Clear command window
 
 thr = [0.15:0.01:0.30]; % Range of proportional thresholds applied to connectome matrices
 behav = {'PercentageTotalMETScore'}; % Define behavior variable for regression analysis
 
 % Define adjacency matrix type
-isOneSidedPositive = false; 
+isOneSidedPositive = false;
 % Set to 'true' for one-sided positive adjacency matrix (only strongest positive connections).
-% Set to 'false' for two-sided adjacency matrix (strongest positive and negative connections, 
+% Set to 'false' for two-sided adjacency matrix (strongest positive and negative connections,
 % transformed into absolute values).
 
-% Participant removal option
-removeparticipant = {'yes'}; 
-% Set 'yes' if participants need to be removed according to multivariate outlier detection.
-% Otherwise, set to 'no'.
+% Remove or not participants from behavioural file
+removeparticipant = {'yes'};
+%% Define paths
+
+% Determine the directory of the current script
+currentScriptDir = fileparts(mfilename('fullpath'));
+
+% Construct paths to necessary directories
+connectomesDir = fullfile(currentScriptDir, 'connectomes');
+NodeNamesAndCoordinatesDir = fullfile(currentScriptDir, 'NodeNames_and_coordinates');
+NodeNamesPath = fullfile(NodeNamesAndCoordinatesDir, 'Destrieux.coordinates.mat');
+CoordinatesPath = fullfile(NodeNamesAndCoordinatesDir, 'DestrieuxCorticalNodes148.mat');
 
 %% Selection of the network of interest
 
@@ -52,9 +59,12 @@ removeparticipant = {'yes'};
 if strcmp(target_net, 'frontoparietal')
     % Frontoparietal network nodes
     nodes = [15 16 25 26 27 53 54 56 89 90 99 100 101 127 128 130];
+    connectomeFilePath = fullfile(connectomesDir, 'functional_connectome_232_FPN.mat');
+
 elseif strcmp(target_net, 'occipital')
     % Occipital network nodes
-    nodes = [2 19 20 21 22 42 59 65 76 93 94 95 96 116 133 139]; 
+    nodes = [2 19 20 21 22 42 59 65 76 93 94 95 96 116 133 139];
+    connectomeFilePath = fullfile(connectomesDir, 'functional_connectome_232_OCC.mat');
 end
 
 %% Remove participants
@@ -64,21 +74,8 @@ if strcmp(removeparticipant, 'yes')
     removepp = [31 75 80 87 93 104 123 154 184]; % Participant(s) to remove according to multivariate_outlier_detection.m
 end
 
-%% Load connectomes
-% Load functional connectivity matrices (values are in Fisher-transformed correlation coefficients-bivariate) 
-% and relevant node information
 
-% Determine the directory of the current script
-currentScriptDir = fileparts(mfilename('fullpath'));
-
-% Construct paths to necessary directories
-connectomesDir = fullfile(currentScriptDir, 'connectomes');
-NodeNamesAndCoordinatesDir = fullfile(currentScriptDir, 'NodeNames_and_coordinates');
-
-% Paths to specific files within the directories
-connectomeFilePath = fullfile(connectomesDir, 'functional_connectome_241.mat');
-NodeNamesPath = fullfile(NodeNamesAndCoordinatesDir, 'Destrieux.coordinates.mat');
-CoordinatesPath = fullfile(NodeNamesAndCoordinatesDir, 'DestrieuxCorticalNodes148.mat');
+%% Load connectomes and other node's relevant information
 
 % Load the specified files
 load(connectomeFilePath); % Load connectome file
@@ -96,15 +93,6 @@ node148Destrieux = NodeNames;
 NodeNames = NodeNames(nodes);
 numnodes = length(nodes);
 
-% Conditionally remove participants' data from Z matrix
-if strcmp(removeparticipant, 'yes')
-    Z(:, :, [removepp]) = [];
-end
-
-%% Node selection for an undirected graph
-disp(['Node selection']);
-% Select nodes for graph analysis based on the defined network nodes
-Z = selectNodesForGraph(Z, nodes);
 %% Selection of connections
 disp(['Selection of connections']);
 
@@ -125,7 +113,7 @@ disp(['Thresholding and binarization']);
 % Apply threshold and binarize the matrix Z using specified thresholds
 W_thr_b = applyThresholdAndBinarize(Z, thr);
 % Clear variables, keeping only those necessary for further steps
-clearvars -except Z node148Destrieux thr names W_thr_b numpp numnodes NodeNames behav myData removepp removeparticipant nodes currentScriptDir
+clearvars -except Z node148Destrieux thr names W_thr_b numpp numnodes NodeNames removeparticipant behav myData removepp nodes currentScriptDir
 
 %% Compute graph theory metrics
 
@@ -138,14 +126,14 @@ numpp = size(Z, 3);
 % Iterate over thresholds, participants, and nodes to sum connections
 for itThr = 1:size(thr, 2)
     for pp = 1:numpp
-        for nodesK = 1:numnodes 
+        for nodesK = 1:numnodes
             t(pp, nodesK, itThr) = sum(W_thr_b(nodesK, :, pp, itThr), 2); % Sum of edges for each node/participant at each threshold
         end
     end
 end
 
 % Assign NaN to nodes with less than 2 edges
-NaNmath_1 = t < 2; 
+NaNmath_1 = t < 2;
 Local_Efficiency_roi(NaNmath_1) = NaN;
 Clustering_Coefficient_roi(NaNmath_1) = NaN;
 
@@ -212,8 +200,8 @@ if strcmp(behav, 'PercentageTotalMETScore')
     X = [results.covariates.effect{1, 1}, results.covariates.effect{1, 2}, results.covariates.effect{1, 3}, results.covariates.effect{1, 9}, results.covariates.effect{1, 12}];
     
     C = [0, 0, 0, 1, 0]; % Contrast vector for focusing on the effect of PercentageTotalMETScore
-    M = 1; 
-    D = [0, 0, 0, 0, 0]; 
+    M = 1;
+    D = [0, 0, 0, 0, 0];
     
     disp(['Effect of PercentageTotalMETScore, while correcting for age, gender, and training']);
     
@@ -223,8 +211,8 @@ elseif strcmp(behav, 'F5')
     X = [results.covariates.effect{1, 1}, results.covariates.effect{1, 2}, results.covariates.effect{1, 3}, results.covariates.effect{1, 14}];
     
     C = [0, 0, 0, 1]; % Contrast vector for focusing on the effect of PercentageTotalMETScore
-    M = 1; 
-    D = [0, 0, 0, 0]; 
+    M = 1;
+    D = [0, 0, 0, 0];
     
 disp(['Effect of Emotions, while correcting for age and gender']);
    
@@ -281,13 +269,13 @@ for itr=1:numnodes % Loop across all nodes
 end
     
 % Clustering Coefficient
-    for itr=1:numnodes 
+    for itr=1:numnodes
         
         NaNpp = isnan(results.measures.Clustering_Coefficient_roi(:,itr));
-        Xmat = X(~NaNpp,:); 
-        Y = [results.measures.measuresNaN.Clustering_Coefficient_roi.scores{1,itr}]; 
+        Xmat = X(~NaNpp,:);
+        Y = [results.measures.measuresNaN.Clustering_Coefficient_roi.scores{1,itr}];
         [h,F,p,dof] = conn_glm(Xmat,Y,C,M,D);
-        p_twoside_unc = 2*min(p,1-p); 
+        p_twoside_unc = 2*min(p,1-p);
         
         stats.(fns{2}).h(itr)=h(:,:,1);
         stats.(fns{2}).F(itr)=F(:,:,1);
@@ -300,13 +288,13 @@ end
     end
     
     % Betweenness centrality
-    for itr=1:numnodes 
+    for itr=1:numnodes
         
         NaNpp = isnan(results.measures.Betweenness_Centrality_roi(:,itr));
-        Xmat = X(~NaNpp,:); 
+        Xmat = X(~NaNpp,:);
         Y = [results.measures.measuresNaN.Betweenness_Centrality_roi.scores{1,itr}];
         [h,F,p,dof] = conn_glm(Xmat,Y,C,M,D);
-        p_twoside_unc = 2*min(p,1-p); 
+        p_twoside_unc = 2*min(p,1-p);
         
         stats.(fns{3}).h(itr)=h(:,:,1);
         stats.(fns{3}).F(itr)=F(:,:,1);
@@ -321,13 +309,13 @@ end
     
     % E_global ROI
     
-    for itr=1:numnodes 
+    for itr=1:numnodes
         
         NaNpp = isnan(results.measures.E_global_roi(:,itr));
-        Xmat = X(~NaNpp,:); 
-        Y = [results.measures.measuresNaN.E_global_roi.scores{1,itr}]; 
+        Xmat = X(~NaNpp,:);
+        Y = [results.measures.measuresNaN.E_global_roi.scores{1,itr}];
         [h,F,p,dof] = conn_glm(Xmat,Y,C,M,D);
-        p_twoside_unc = 2*min(p,1-p); 
+        p_twoside_unc = 2*min(p,1-p);
         
         stats.(fns{4}).h(itr)=h(:,:,1);
         stats.(fns{4}).F(itr)=F(:,:,1);
