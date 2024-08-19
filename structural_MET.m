@@ -21,10 +21,9 @@
 %   various graph theory metrics.
 % - Conn: A functional connectivity analysis software, employed for preprocessing, analysis, and visualization of
 %   functional connectome data. Note that results may vary slightly based on the CONN version used.
-% - SPM12: software package designed for the analysis of brain imaging data sequences
 %
 % Usage Notes:
-% - Ensure that both BCT, SPM12, Conn software packages are properly installed and accessible in your MATLAB environment 
+% - Ensure that both BCT and Conn software packages are properly installed and accessible in your MATLAB environment 
 %   prior to running this script.
 % - Adaptations may be required to align with specific research objectives or to accommodate updates in the
 %   dependencies and paths
@@ -40,6 +39,16 @@ removeparticipant={'yes'};
 % Set 'yes' if participants need to be removed according to multivariate outlier detection.
 % Otherwise, set to 'no'.
 
+%% Define Paths
+
+% Determine the directory of the current script
+currentScriptDir = fileparts(mfilename('fullpath'));
+
+% Construct paths to necessary directories
+connectomesDir = fullfile(currentScriptDir, 'connectomes');
+
+% Paths to specific files within the directories
+connectomeFilePath = fullfile(connectomesDir, 'structural_connectome_225_FPN.mat');
 
 %% Selection of the network of interest
 
@@ -47,9 +56,13 @@ removeparticipant={'yes'};
 if strcmp(target_net,'frontoparietal')
     % Frontoparietal network nodes
     nodes=[15 16 25 26 27 53 54 56 89 90 99 100 101 127 128 130];
+    connectomeFilePath = fullfile(connectomesDir, 'structural_connectome_225_FPN.mat');
+        
 elseif strcmp(target_net,'occipital')
     % Occipital network nodes
     nodes= [2 19 20 21 22 42 59 65 76 93 94 95 96 116 133 139]; 
+    connectomeFilePath = fullfile(connectomesDir, 'structural_connectome_225_OCC.mat');
+
 end
 %% Remove participants
 
@@ -63,16 +76,8 @@ end
 % 0165 0229 0260 0266 0278. The others are those that result as outliers in
 % the multivariate outlier detection analysis.
 
-%% Load connectomes
-% Load functional connectivity matrices and relevant node information
+%% Load structural connectomes
 
-% Determine the directory of the current script
-currentScriptDir = fileparts(mfilename('fullpath'));
-
-% Construct paths to necessary directories
-connectomesDir = fullfile(currentScriptDir, 'connectomes');
-% Paths to specific files within the directories
-connectomeFilePath = fullfile(connectomesDir, 'structural_connectome_233.mat');
 % Load the specified files
 load(connectomeFilePath)
 
@@ -94,8 +99,7 @@ for k = 1:numel(images_dir) % Iterate over the array of participant directories
     end
 end
 
-% Remove the specified slices from the connectome matrix
-matrix(:, :, idx) = []; % Removes the matrices corresponding to participants in 'idx'
+
 %% GRAPH THEORY
 %% extract name and number nodes Destrieux parcellation
 
@@ -120,10 +124,6 @@ node148Destrieux = NodeNames;
 NodeNames = NodeNames(nodes);
 numnodes=length(nodes);
 
-%% Node selection for an undirected graph
-disp(['Node selection']);
-% Select nodes for graph analysis based on the defined network nodes
-Z = selectNodesForGraph(matrix, nodes);
 %% Thresholding and binarization
 disp(['Thresholding and binarization']);
 % Apply threshold and binarize the matrix Z using specified thresholds
